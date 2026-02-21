@@ -6,6 +6,7 @@ It provides a background daemon, CLI controls, live Waybar output, and end-of-se
 
 
 Pomodoro commands:
+- `pomodoro` (alias command; supports all subcommands)
 - `pomodoro-daemon` (background session engine)
 - `pomodoroctl` (CLI controls)
 - `pomodoro-waybar` (Waybar JSON output)
@@ -26,9 +27,11 @@ pomodoroctl start 25
 pomodoroctl pause
 pomodoroctl resume
 pomodoroctl stop
+pomodoroctl reset
 pomodoroctl skip
 pomodoroctl status
 pomodoroctl status --json
+pomodoro reset
 ```
 
 `pomodoroctl status` shows human time + seconds, for example:
@@ -42,6 +45,9 @@ status=running mode=work remaining=16m (901s) cycle_index=0 today_completed=0
 ```json
 {"remaining_sec": 901, "remaining_human": "16m"}
 ```
+
+`pomodoroctl reset` (or `pomodoro reset`) resets all timer stats and forces idle state.
+After every PC reboot, timer state is also reset to idle and stats are reset automatically.
 
 ## Waybar module
 

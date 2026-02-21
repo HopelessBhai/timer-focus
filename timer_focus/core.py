@@ -27,6 +27,14 @@ DEFAULT_CONFIG: dict[str, Any] = {
 }
 
 
+def current_boot_id() -> str:
+    boot_id_path = Path("/proc/sys/kernel/random/boot_id")
+    try:
+        return boot_id_path.read_text(encoding="utf-8").strip()
+    except Exception:
+        return ""
+
+
 def ensure_dirs() -> None:
     CONFIG_DIR.mkdir(parents=True, exist_ok=True)
     STATE_DIR.mkdir(parents=True, exist_ok=True)
@@ -76,6 +84,7 @@ def default_state() -> dict[str, Any]:
         "remaining_sec": 0,
         "cycle_index": 0,
         "today_completed": 0,
+        "boot_id": current_boot_id(),
     }
 
 
@@ -96,11 +105,23 @@ def load_state() -> dict[str, Any]:
             state[key] = 0
     state["mode"] = str(state.get("mode", "work"))
     state["status"] = str(state.get("status", "idle"))
+    state["boot_id"] = str(state.get("boot_id", ""))
+
+    # Hard reset timer/state after reboot.
+    current = current_boot_id()
+    if current and state["boot_id"] and state["boot_id"] != current:
+        reboot_reset = default_state()
+        reboot_reset["boot_id"] = current
+        return reboot_reset
+    if current and not state["boot_id"]:
+        state["boot_id"] = current
     return state
 
 
 def write_state(state: dict[str, Any]) -> None:
     ensure_dirs()
+    state = dict(state)
+    state["boot_id"] = current_boot_id()
     payload = json.dumps(state, ensure_ascii=True, separators=(",", ":"))
     with tempfile.NamedTemporaryFile(
         mode="w",

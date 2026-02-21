@@ -4,13 +4,14 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "timer-focus"
-version = "0.1.3"
+version = "0.1.4"
 description = "Pomodoro timer with Waybar output and popup alerts"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = []
 
 [project.scripts]
+pomodoro = "timer_focus.ctl:main"
 pomodoro-daemon = "timer_focus.daemon:main"
 pomodoroctl = "timer_focus.ctl:main"
 pomodoro-waybar = "timer_focus.waybar:main"

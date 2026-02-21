@@ -8,6 +8,7 @@ import time
 
 from .core import (
     LOCK_PATH,
+    default_state,
     load_config,
     load_state,
     mode_minutes,
@@ -113,6 +114,11 @@ def do_stop() -> int:
     return 0
 
 
+def do_reset() -> int:
+    write_state(default_state())
+    return 0
+
+
 def do_skip() -> int:
     state = load_state()
     if state.get("status") not in {"running", "paused"}:
@@ -173,6 +179,7 @@ def parse_args() -> argparse.Namespace:
     sub.add_parser("pause")
     sub.add_parser("resume")
     sub.add_parser("stop")
+    sub.add_parser("reset")
     sub.add_parser("skip")
     sub.add_parser("toggle")
 
@@ -194,6 +201,8 @@ def main() -> None:
         code = do_resume()
     elif cmd == "stop":
         code = do_stop()
+    elif cmd == "reset":
+        code = do_reset()
     elif cmd == "skip":
         code = do_skip()
     elif cmd == "toggle":
